@@ -37,8 +37,8 @@ type KeyValueWriter interface {
 	Delete(key []byte) error
 }
 
-// Stater wraps the Stat method of a backing data store.
-type Stater interface {
+// KeyValueStater wraps the Stat method of a backing data store.
+type KeyValueStater interface {
 	// Stat returns a particular internal stat of the database.
 	Stat(property string) (string, error)
 }
@@ -62,7 +62,7 @@ type KeyValueStore interface {
 	KeyValueWriter
 	Batcher
 	Iteratee
-	Stater
+	KeyValueStater
 	Compacter
 	io.Closer
 }
@@ -132,7 +132,7 @@ type Database interface {
 	Writer
 	Batcher
 	Iteratee
-	Stater
+	KeyValueStater
 	Compacter
 	io.Closer
 }
