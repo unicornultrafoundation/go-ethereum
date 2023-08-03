@@ -780,6 +780,12 @@ var (
 		Value: metrics.DefaultConfig.InfluxDBOrganization,
 	}
 
+	MetricsPrometheusEndpointFlag = cli.StringFlag{
+		Name:  "metrics.prometheus.endpoint",
+		Usage: "Prometheus API endpoint to report metrics to",
+		Value: metrics.DefaultConfig.PrometheusEndpointPort,
+	}
+
 	CatalystFlag = cli.BoolFlag{
 		Name:  "catalyst",
 		Usage: "Catalyst mode (eth2 integration testing)",
