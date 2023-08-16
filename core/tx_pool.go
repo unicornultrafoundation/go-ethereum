@@ -151,7 +151,7 @@ const (
 // blockChain provides the state of blockchain and current gas limit to do
 // some pre checks in tx pool and event subscribers.
 type blockChain interface {
-	CurrentBlock() *types.Header
+	CurrentBlock() *types.Block
 	GetBlock(hash common.Hash, number uint64) *types.Block
 	StateAt(root common.Hash) (*state.StateDB, error)
 
@@ -315,7 +315,7 @@ func NewTxPool(config TxPoolConfig, chainconfig *params.ChainConfig, chain block
 		pool.locals.add(addr)
 	}
 	pool.priced = newTxPricedList(pool.all)
-	pool.reset(nil, chain.CurrentBlock())
+	pool.reset(nil, chain.CurrentBlock().Header())
 
 	// Start the reorg loop early so it can handle requests generated during journal loading.
 	pool.wg.Add(1)
@@ -367,8 +367,8 @@ func (pool *TxPool) loop() {
 		// Handle ChainHeadEvent
 		case ev := <-pool.chainHeadCh:
 			if ev.Block != nil {
-				pool.requestReset(head, ev.Block.Header())
-				head = ev.Block.Header()
+				pool.requestReset(head.Header(), ev.Block.Header())
+				head = ev.Block
 			}
 
 		// System shutdown.
@@ -1366,7 +1366,7 @@ func (pool *TxPool) reset(oldHead, newHead *types.Header) {
 	}
 	// Initialize the internal state to the current head
 	if newHead == nil {
-		newHead = pool.chain.CurrentBlock() // Special case during testing
+		newHead = pool.chain.CurrentBlock().Header() // Special case during testing
 	}
 	statedb, err := pool.chain.StateAt(newHead.Root)
 	if err != nil {
